@@ -3,7 +3,7 @@ import { ModelType, Message, Language } from "../types";
 import { SYSTEM_INSTRUCTION, MODEL_CONFIGS } from "../constants";
 
 // Initialize the client. We assume process.env.API_KEY is available.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
 
 export async function extractInformationFromImage(base64Data: string, mimeType: string): Promise<string> {
   try {
