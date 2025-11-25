@@ -29,10 +29,16 @@ export async function generateGeminiResponse(
 
     const model = genAI.getGenerativeModel({ model: safeModelName });
 
-    const chatHistory = history.slice(0, -1).map(msg => ({
+    // 1. 转换历史记录格式
+    let chatHistory = history.slice(0, -1).map(msg => ({
       role: msg.role === 'user' ? 'user' : 'model',
       parts: [{ text: msg.content }]
     }));
+
+    // 2. 【关键修复】剔除第一条欢迎语（如果是 Model 发言）
+    if (chatHistory.length > 0 && chatHistory[0].role === 'model') {
+      chatHistory.shift();
+    }
 
     const chat = model.startChat({
       history: chatHistory,
@@ -61,7 +67,6 @@ export async function generateGeminiResponse(
   }
 }
 
-// 补上解析图片的函数
 export async function extractInformationFromImage(base64Data: string, mimeType: string): Promise<string> {
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
   if (!apiKey) {
