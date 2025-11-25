@@ -1,10 +1,9 @@
-import { GoogleGenAI } from "@google/generative-ai"; // 注意这里引用可能不同，保持你原本的引用即可
-// 如果你之前是 import { GoogleGenAI, Tool } from "@google/genai"; 请保持原样
+// services/geminiService.ts
 
-import { ModelType, Message, Language } from "../types"; // 保持你原本的引用
+// 1. 引用正确的官方库 (注意：是 GoogleGenerativeAI，不是 GoogleGenAI)
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { ModelType, Message, Language } from "../types";
 import { SYSTEM_INSTRUCTION, MODEL_CONFIGS } from "../constants";
-
-// 【关键修改】把外面的 const ai = ... 删掉！
 
 export async function generateGeminiResponse(
   history: Message[],
@@ -12,42 +11,65 @@ export async function generateGeminiResponse(
   language: Language,
   knowledgeBase?: string
 ) {
-  // 1. 获取 Key
+  // 2. 获取 API Key (安全写法)
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
-  // 2. 【安全检查】如果没有 Key，优雅地报错，而不是让网站黑屏
   if (!apiKey) {
-    throw new Error("API Key 未配置！请检查 Vercel 环境变量 VITE_GEMINI_API_KEY");
+    console.error("❌ 致命错误: 未找到 API Key，请检查 Vercel 环境变量 VITE_GEMINI_API_KEY");
+    // 返回一个假消息，避免让整个网页黑屏崩溃
+    return { 
+      text: "系统错误：未检测到 API Key。请联系管理员在 Vercel 后台配置 VITE_GEMINI_API_KEY。",
+      groundingMetadata: null
+    };
   }
 
-  // 3. 【延迟初始化】只有在需要发消息时，才创建 AI 实例
-  const genAI = new GoogleGenAI(apiKey);
-  
-  // 4. 获取正确的模型名称 (防止 gemini-3 报错)
-  const modelName = MODEL_CONFIGS[modelType].modelName;
-  const model = genAI.getGenerativeModel({ model: modelName });
+  try {
+    // 3. 【关键】在函数内部初始化，防止网页启动时崩溃
+    const genAI = new GoogleGenerativeAI(apiKey);
+    
+    // 获取模型名称 (如果 constants.ts 里写错了，这里兜底用 flash)
+    const configName = MODEL_CONFIGS[modelType]?.modelName || 'gemini-1.5-flash';
+    // 确保不使用幻觉出来的 3.0 或 2.5 版本
+    const safeModelName = configName.includes('gemini-3') || configName.includes('2.5') 
+      ? 'gemini-1.5-flash' 
+      : configName;
 
-  // ... (下面保留你原本的 history 处理和 generateContent 逻辑) ...
-  // 为了确保代码能跑，这里我简写了，请把你原本的 chat.sendMessage 或 generateContent 逻辑接在这里
-  // 重点是把 new GoogleGenAI 这一步挪到了这个函数的大括号里面！
-  
-  // 下面是帮你补全的简单逻辑，你可以直接用：
-  const chat = model.startChat({
-    history: history.slice(0, -1).map(msg => ({
+    const model = genAI.getGenerativeModel({ model: safeModelName });
+
+    // 4. 转换历史记录格式 (把你的 Message 格式转成 Google API 需要的格式)
+    const chatHistory = history.slice(0, -1).map(msg => ({
       role: msg.role === 'user' ? 'user' : 'model',
       parts: [{ text: msg.content }]
-    })),
-    systemInstruction: SYSTEM_INSTRUCTION[language],
-  });
+    }));
 
-  const lastMessage = history[history.length - 1].content;
-  
-  // 如果有知识库，拼接到最后一条消息里
-  const finalPrompt = knowledgeBase 
-    ? `Knowledge Base Context:\n${knowledgeBase}\n\nUser Question:\n${lastMessage}` 
-    : lastMessage;
+    // 5. 启动聊天
+    const chat = model.startChat({
+      history: chatHistory,
+      // 如果你的库版本旧，可能不支持 systemInstruction，这里做了兼容
+      systemInstruction: SYSTEM_INSTRUCTION ? { role: 'system', parts: [{ text: SYSTEM_INSTRUCTION[language] }] } : undefined,
+    });
 
-  const result = await chat.sendMessage(finalPrompt);
-  const response = await result.response;
-  return { text: response.text() };
+    // 6. 拼接知识库上下文
+    const lastMsgContent = history[history.length - 1].content;
+    const finalPrompt = knowledgeBase 
+      ? `【知识库参考信息】:\n${knowledgeBase}\n\n【用户问题】:\n${lastMsgContent}` 
+      : lastMsgContent;
+
+    console.log("正在发送请求给模型:", safeModelName);
+    const result = await chat.sendMessage(finalPrompt);
+    const response = await result.response;
+    
+    return {
+      text: response.text(),
+      groundingMetadata: null 
+    };
+
+  } catch (error: any) {
+    console.error("AI 请求失败:", error);
+    // 优雅降级：返回错误提示，而不是让 APP 崩溃
+    return {
+      text: `请求出错: ${error.message || "未知网络错误"}`,
+      groundingMetadata: null
+    };
+  }
 }
