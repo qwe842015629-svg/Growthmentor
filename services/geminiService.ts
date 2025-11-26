@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { ModelType, Message, Language } from "../types";
-import { SYSTEM_INSTRUCTION } from "../constants"; // 不再引用 MODEL_CONFIGS，防止干扰
+import { SYSTEM_INSTRUCTION, MODEL_CONFIGS } from "../constants";
 
 export async function generateGeminiResponse(
   history: Message[],
@@ -21,12 +21,15 @@ export async function generateGeminiResponse(
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
     
-    // 🔥🔥🔥【核弹级修复】🔥🔥🔥
-    // 强制使用 'gemini-1.5-flash'。这是之前唯一成功连通过（报角色错误）的模型。
-    // 我们暂时忽略 modelType，先确保能对话！
-    const safeModelName = 'gemini-1.5-flash';
+    // 【关键修复】优先使用配置文件里的 gemini-2.5，如果读取失败，强制兜底到 gemini-2.5-flash
+    const configName = MODEL_CONFIGS[modelType]?.modelName || 'gemini-2.5-flash';
+    
+    // 双重保险：如果混入了旧版本名字，强制纠正为 2.5
+    const safeModelName = (configName.includes('1.5') || configName.includes('preview'))
+      ? 'gemini-2.5-flash' 
+      : configName;
 
-    console.log("🚀 强制使用模型:", safeModelName); 
+    console.log("🚀 使用模型:", safeModelName); 
 
     const model = genAI.getGenerativeModel({ model: safeModelName });
 
@@ -62,7 +65,7 @@ export async function generateGeminiResponse(
   } catch (error: any) {
     console.error("AI 请求失败:", error);
     return {
-      text: `请求出错: ${error.message || "未知网络错误"}。\n\n(提示：请检查 API Key 是否开通了 Flash 模型权限)`,
+      text: `请求出错: ${error.message || "未知网络错误"}。\n\n(提示：1.5模型已退役，请确保使用了 gemini-2.5-flash)`,
       groundingMetadata: null
     };
   }
@@ -75,12 +78,13 @@ export async function extractInformationFromImage(base64Data: string, mimeType: 
   }
 
   const genAI = new GoogleGenerativeAI(apiKey);
-  // 这里也强制写死
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+  
+  // 【关键修复】图片解析也强制使用 gemini-2.5-flash
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
   try {
     const result = await model.generateContent([
-      "Please transcribe all text visible in this image.",
+      "Please transcribe all text visible in this image. If there are tables or structured data, maintain the structure.",
       {
         inlineData: {
           data: base64Data,
