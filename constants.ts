@@ -170,21 +170,18 @@ export const UI_STRINGS = {
   }
 };
 
-// 记得检查一下，必须是 export (以e开头)
 export const MODEL_CONFIGS = {
-  // 深度思考：使用最新的 1.5 Pro 002 版
+  // 全部统一用最基础的 1.5 Flash，先确保能跑通！
   [ModelType.DEEP_THINKING]: {
-    modelName: 'gemini-1.5-pro-002', 
+    modelName: 'gemini-1.5-flash', 
     icon: 'BrainCircuit'
   },
-  // 联网搜索：使用最新的 1.5 Flash 002 版
   [ModelType.WEB_SEARCH]: {
-    modelName: 'gemini-1.5-flash-002',
+    modelName: 'gemini-1.5-flash',
     icon: 'Globe'
   },
-  // 快速问答：使用最新的 1.5 Flash 002 版
   [ModelType.FAST]: {
-    modelName: 'gemini-1.5-flash-002',
+    modelName: 'gemini-1.5-flash',
     icon: 'Zap'
   }
 };
