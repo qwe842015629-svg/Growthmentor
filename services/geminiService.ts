@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { ModelType, Message, Language } from "../types";
-import { SYSTEM_INSTRUCTION, MODEL_CONFIGS } from "../constants";
+import { SYSTEM_INSTRUCTION } from "../constants"; // 不再引用 MODEL_CONFIGS，防止干扰
 
 export async function generateGeminiResponse(
   history: Message[],
@@ -21,16 +21,12 @@ export async function generateGeminiResponse(
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
     
-    // 获取模型名称，兜底使用 1.5-flash-001 稳定版
-    // 如果配置文件里有 gemini-3 或其他乱七八糟的名字，强行修正回来
-    const configName = MODEL_CONFIGS[modelType]?.modelName || 'gemini-1.5-flash-001';
-    
-    // 二次安全检查：防止版本号错乱，统一 fallback 到 001
-    const safeModelName = (configName.includes('gemini-3') || configName.includes('2.5'))
-      ? 'gemini-1.5-flash-001' 
-      : configName;
+    // 🔥🔥🔥【核弹级修复】🔥🔥🔥
+    // 强制使用 'gemini-1.5-flash'。这是之前唯一成功连通过（报角色错误）的模型。
+    // 我们暂时忽略 modelType，先确保能对话！
+    const safeModelName = 'gemini-1.5-flash';
 
-    console.log("Using Model:", safeModelName); // 调试日志
+    console.log("🚀 强制使用模型:", safeModelName); 
 
     const model = genAI.getGenerativeModel({ model: safeModelName });
 
@@ -66,7 +62,7 @@ export async function generateGeminiResponse(
   } catch (error: any) {
     console.error("AI 请求失败:", error);
     return {
-      text: `请求出错: ${error.message || "未知网络错误"}`,
+      text: `请求出错: ${error.message || "未知网络错误"}。\n\n(提示：请检查 API Key 是否开通了 Flash 模型权限)`,
       groundingMetadata: null
     };
   }
@@ -79,12 +75,12 @@ export async function extractInformationFromImage(base64Data: string, mimeType: 
   }
 
   const genAI = new GoogleGenerativeAI(apiKey);
-  // 这里的模型也统一改为 1.5-flash-001 稳定版
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-001' });
+  // 这里也强制写死
+  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
   try {
     const result = await model.generateContent([
-      "Please transcribe all text visible in this image. If there are tables or structured data, maintain the structure.",
+      "Please transcribe all text visible in this image.",
       {
         inlineData: {
           data: base64Data,
