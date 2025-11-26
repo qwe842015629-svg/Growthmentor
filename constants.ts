@@ -171,16 +171,19 @@ export const UI_STRINGS = {
 };
 
 export const MODEL_CONFIGS = {
+  // 深度思考：改回 1.5 Pro (目前最强稳定版)
   [ModelType.DEEP_THINKING]: {
-    modelName: 'gemini-2.0-pro-preview',
+    modelName: 'gemini-1.5-pro', 
     icon: 'BrainCircuit'
   },
+  // 联网搜索：用 1.5 Flash (速度快)
   [ModelType.WEB_SEARCH]: {
-    modelName: 'gemini-2.0-flash',
+    modelName: 'gemini-1.5-flash',
     icon: 'Globe'
   },
+  // 快速问答：用 1.5 Flash
   [ModelType.FAST]: {
-    modelName: 'gemini-2.0-flash-lite',
+    modelName: 'gemini-1.5-flash',
     icon: 'Zap'
   }
 };
