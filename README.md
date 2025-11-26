@@ -8,6 +8,8 @@ This contains everything you need to run your app locally.
 
 View your app in AI Studio: https://ai.studio/apps/drive/1YvprtCry4K4GarJ3CuQt3-fELbWDCxK4
 
+My url:https://growthmentor.vercel.app/
+
 ## Run Locally
 
 **Prerequisites:**  Node.js
