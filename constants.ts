@@ -169,18 +169,18 @@ export const UI_STRINGS = {
   }
 };
 
-// 【这里是关键修改】：使用 -001 后缀的稳定版模型名
+// 【这里是关键修改】：使用 gemini-2.5 系列正式版
 export const MODEL_CONFIGS = {
   [ModelType.DEEP_THINKING]: {
-    modelName: 'gemini-1.5-pro-001', 
+    modelName: 'gemini-2.5-pro', 
     icon: 'BrainCircuit'
   },
   [ModelType.WEB_SEARCH]: {
-    modelName: 'gemini-1.5-flash-001',
+    modelName: 'gemini-2.5-flash',
     icon: 'Globe'
   },
   [ModelType.FAST]: {
-    modelName: 'gemini-1.5-flash-001',
+    modelName: 'gemini-2.5-flash',
     icon: 'Zap'
   }
 };
