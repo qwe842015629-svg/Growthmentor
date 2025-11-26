@@ -170,7 +170,8 @@ export const UI_STRINGS = {
   }
 };
 
-xport const MODEL_CONFIGS = {
+// 记得检查一下，必须是 export (以e开头)
+export const MODEL_CONFIGS = {
   // 深度思考：使用最新的 1.5 Pro 002 版
   [ModelType.DEEP_THINKING]: {
     modelName: 'gemini-1.5-pro-002', 
