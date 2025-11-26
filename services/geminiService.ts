@@ -21,11 +21,11 @@ export async function generateGeminiResponse(
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
     
-    // 🔥【关键修改】强制使用 gemini-2.0-flash
-    // 2.0 Flash 速度快，性能好，通常比 2.5 更稳定
-    const safeModelName = 'gemini-2.0-flash';
+    // 🔥【关键修改】强制使用 gemini-2.0-flash-lite-preview-02-05
+    // 这是目前最省流、额度最高的 Lite 模型
+    const safeModelName = 'gemini-2.0-flash-lite-preview-02-05';
 
-    console.log("🚀 切换到 2.0 版本:", safeModelName); 
+    console.log("🚀 使用 Lite 模型:", safeModelName); 
 
     const model = genAI.getGenerativeModel({ model: safeModelName });
 
@@ -61,7 +61,7 @@ export async function generateGeminiResponse(
   } catch (error: any) {
     console.error("AI 请求失败:", error);
     return {
-      text: `请求出错: ${error.message || "未知网络错误"}。\n\n(提示：请尝试清空对话历史，或稍后重试)`,
+      text: `请求出错: ${error.message || "未知网络错误"}。\n\n(提示：您可能今日额度已耗尽，请尝试清空对话历史)`,
       groundingMetadata: null
     };
   }
@@ -75,8 +75,8 @@ export async function extractInformationFromImage(base64Data: string, mimeType: 
 
   const genAI = new GoogleGenerativeAI(apiKey);
   
-  // 图片解析也用 2.0-flash
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+  // 图片解析也用 Lite 版
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-lite-preview-02-05' });
 
   try {
     const result = await model.generateContent([
