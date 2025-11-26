@@ -170,20 +170,20 @@ export const UI_STRINGS = {
   }
 };
 
-export const MODEL_CONFIGS = {
-  // 深度思考：改回 1.5 Pro (目前最强稳定版)
+xport const MODEL_CONFIGS = {
+  // 深度思考：使用最新的 1.5 Pro 002 版
   [ModelType.DEEP_THINKING]: {
-    modelName: 'gemini-1.5-pro', 
+    modelName: 'gemini-1.5-pro-002', 
     icon: 'BrainCircuit'
   },
-  // 联网搜索：用 1.5 Flash (速度快)
+  // 联网搜索：使用最新的 1.5 Flash 002 版
   [ModelType.WEB_SEARCH]: {
-    modelName: 'gemini-1.5-flash',
+    modelName: 'gemini-1.5-flash-002',
     icon: 'Globe'
   },
-  // 快速问答：用 1.5 Flash
+  // 快速问答：使用最新的 1.5 Flash 002 版
   [ModelType.FAST]: {
-    modelName: 'gemini-1.5-flash',
+    modelName: 'gemini-1.5-flash-002',
     icon: 'Zap'
   }
 };
