@@ -1,5 +1,4 @@
-
-import { ModelType, Language } from "./types";
+import { ModelType } from "./types";
 
 const CHART_INSTRUCTION = `
 **Chart Generation:**
@@ -170,18 +169,18 @@ export const UI_STRINGS = {
   }
 };
 
+// 【这里是关键修改】：使用 -001 后缀的稳定版模型名
 export const MODEL_CONFIGS = {
-  // 全部统一用最基础的 1.5 Flash，先确保能跑通！
   [ModelType.DEEP_THINKING]: {
-    modelName: 'gemini-1.5-flash', 
+    modelName: 'gemini-1.5-pro-001', 
     icon: 'BrainCircuit'
   },
   [ModelType.WEB_SEARCH]: {
-    modelName: 'gemini-1.5-flash',
+    modelName: 'gemini-1.5-flash-001',
     icon: 'Globe'
   },
   [ModelType.FAST]: {
-    modelName: 'gemini-1.5-flash',
+    modelName: 'gemini-1.5-flash-001',
     icon: 'Zap'
   }
 };
