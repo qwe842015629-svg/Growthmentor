@@ -169,18 +169,19 @@ export const UI_STRINGS = {
   }
 };
 
-// 🔥【切换到 2.0 系列】🔥
+// 🔥【切换到 2.0 Flash Lite】🔥
+// 这是目前 Google 额度最高的免费模型
 export const MODEL_CONFIGS = {
   [ModelType.DEEP_THINKING]: {
-    modelName: 'gemini-2.0-flash', 
+    modelName: 'gemini-2.0-flash-lite-preview-02-05', 
     icon: 'BrainCircuit'
   },
   [ModelType.WEB_SEARCH]: {
-    modelName: 'gemini-2.0-flash',
+    modelName: 'gemini-2.0-flash-lite-preview-02-05',
     icon: 'Globe'
   },
   [ModelType.FAST]: {
-    modelName: 'gemini-2.0-flash',
+    modelName: 'gemini-2.0-flash-lite-preview-02-05',
     icon: 'Zap'
   }
 };
