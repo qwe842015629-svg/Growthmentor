@@ -172,15 +172,15 @@ export const UI_STRINGS = {
 
 export const MODEL_CONFIGS = {
   [ModelType.DEEP_THINKING]: {
-    modelName: 'gemini-2.5-pro-preview',
+    modelName: 'gemini-2.0-pro-preview',
     icon: 'BrainCircuit'
   },
   [ModelType.WEB_SEARCH]: {
-    modelName: 'gemini-2.5-flash',
+    modelName: 'gemini-2.0-flash',
     icon: 'Globe'
   },
   [ModelType.FAST]: {
-    modelName: 'gemini-2.5-flash-lite',
+    modelName: 'gemini-2.0-flash-lite',
     icon: 'Zap'
   }
 };
