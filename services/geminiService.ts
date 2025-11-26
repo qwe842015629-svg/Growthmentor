@@ -21,15 +21,11 @@ export async function generateGeminiResponse(
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
     
-    // 【关键修复】优先使用配置文件里的 gemini-2.5，如果读取失败，强制兜底到 gemini-2.5-flash
-    const configName = MODEL_CONFIGS[modelType]?.modelName || 'gemini-2.5-flash';
-    
-    // 双重保险：如果混入了旧版本名字，强制纠正为 2.5
-    const safeModelName = (configName.includes('1.5') || configName.includes('preview'))
-      ? 'gemini-2.5-flash' 
-      : configName;
+    // 🔥【关键修改】强制使用 gemini-2.0-flash
+    // 2.0 Flash 速度快，性能好，通常比 2.5 更稳定
+    const safeModelName = 'gemini-2.0-flash';
 
-    console.log("🚀 使用模型:", safeModelName); 
+    console.log("🚀 切换到 2.0 版本:", safeModelName); 
 
     const model = genAI.getGenerativeModel({ model: safeModelName });
 
@@ -65,7 +61,7 @@ export async function generateGeminiResponse(
   } catch (error: any) {
     console.error("AI 请求失败:", error);
     return {
-      text: `请求出错: ${error.message || "未知网络错误"}。\n\n(提示：1.5模型已退役，请确保使用了 gemini-2.5-flash)`,
+      text: `请求出错: ${error.message || "未知网络错误"}。\n\n(提示：请尝试清空对话历史，或稍后重试)`,
       groundingMetadata: null
     };
   }
@@ -79,8 +75,8 @@ export async function extractInformationFromImage(base64Data: string, mimeType: 
 
   const genAI = new GoogleGenerativeAI(apiKey);
   
-  // 【关键修复】图片解析也强制使用 gemini-2.5-flash
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+  // 图片解析也用 2.0-flash
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
   try {
     const result = await model.generateContent([
