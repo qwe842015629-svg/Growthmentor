@@ -21,14 +21,18 @@ export async function generateGeminiResponse(
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
     
-    // 👇👇👇【关键修改点】👇👇👇
-    // 直接读取配置文件里的 gemini-2.5，不再强制回退到 1.5！
-    const modelName = MODEL_CONFIGS[modelType]?.modelName || 'gemini-2.5-flash';
+    // 获取模型名称，兜底使用 1.5-flash-001 稳定版
+    // 如果配置文件里有 gemini-3 或其他乱七八糟的名字，强行修正回来
+    const configName = MODEL_CONFIGS[modelType]?.modelName || 'gemini-1.5-flash-001';
     
-    console.log("正在使用的模型:", modelName); // 方便调试
+    // 二次安全检查：防止版本号错乱，统一 fallback 到 001
+    const safeModelName = (configName.includes('gemini-3') || configName.includes('2.5'))
+      ? 'gemini-1.5-flash-001' 
+      : configName;
 
-    const model = genAI.getGenerativeModel({ model: modelName });
-    // 👆👆👆【修改结束】👆👆👆
+    console.log("Using Model:", safeModelName); // 调试日志
+
+    const model = genAI.getGenerativeModel({ model: safeModelName });
 
     // 1. 转换历史记录格式
     let chatHistory = history.slice(0, -1).map(msg => ({
@@ -68,7 +72,6 @@ export async function generateGeminiResponse(
   }
 }
 
-// 图片解析函数也同步升级到 2.5
 export async function extractInformationFromImage(base64Data: string, mimeType: string): Promise<string> {
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
   if (!apiKey) {
@@ -76,12 +79,12 @@ export async function extractInformationFromImage(base64Data: string, mimeType: 
   }
 
   const genAI = new GoogleGenerativeAI(apiKey);
-  // 使用最新的 2.5 Flash 模型
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+  // 这里的模型也统一改为 1.5-flash-001 稳定版
+  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-001' });
 
   try {
     const result = await model.generateContent([
-      "Please transcribe all text visible in this image.",
+      "Please transcribe all text visible in this image. If there are tables or structured data, maintain the structure.",
       {
         inlineData: {
           data: base64Data,
