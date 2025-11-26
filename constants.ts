@@ -169,18 +169,18 @@ export const UI_STRINGS = {
   }
 };
 
-// 【这里是关键修改】：使用 gemini-2.5 系列正式版
+// 🔥【切换到 2.0 系列】🔥
 export const MODEL_CONFIGS = {
   [ModelType.DEEP_THINKING]: {
-    modelName: 'gemini-2.5-pro', 
+    modelName: 'gemini-2.0-flash', 
     icon: 'BrainCircuit'
   },
   [ModelType.WEB_SEARCH]: {
-    modelName: 'gemini-2.5-flash',
+    modelName: 'gemini-2.0-flash',
     icon: 'Globe'
   },
   [ModelType.FAST]: {
-    modelName: 'gemini-2.5-flash',
+    modelName: 'gemini-2.0-flash',
     icon: 'Zap'
   }
 };
